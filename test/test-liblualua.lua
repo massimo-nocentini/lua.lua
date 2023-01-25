@@ -63,11 +63,12 @@ function Test_lua:test_lua_call ()
     local T = lua.lua_newthread (L)
 
     local j = 42
-    lua.push (T, function (i)
-        j = j + 1
-        return i + 1, j 
-    end)
-    lua.lua_pushinteger (T, 42)
+    lua.push (T, 
+        function (i)
+            j = j + 1
+            return i + 1, j 
+        end, 
+        42)
 
     lua.lua_call (T, 1, lua.LUA_MULTRET)
 
@@ -86,8 +87,7 @@ function Test_lua:test_lua_resume ()
     local S = lua.lua_newthread (L)
 
     local j = 42
-    lua.push (T, function (i) j = j + 1; return i + 1, j end)
-    lua.lua_pushinteger (T, 0)
+    lua.push (T, function (i) j = j + 1; return i + 1, j end, 0)
 
     local retcode, nres = lua.lua_resume (T, S, 1)
 
