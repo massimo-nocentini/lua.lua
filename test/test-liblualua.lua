@@ -117,14 +117,14 @@ function Test_lua:test_lua_resume_yield ()
     local j = lua.lua_tointeger (T, 1)
     lu.assertEquals (j, init)
 
-    lua.push (T, j + 1);
+    lua.push (T, j + 4);
     local retcode, nres = lua.lua_resume (T, S, 1)
 
     lu.assertEquals (retcode, lua.LUA_YIELD)
     lu.assertEquals (nres, 1)
     lu.assertEquals (lua.lua_gettop(S), 0)
     lu.assertEquals (lua.lua_gettop(T), 1)
-    lu.assertEquals (lua.lua_tointeger (T, 1), init + 1)
+    lu.assertEquals (lua.lua_tointeger (T, 1), init + 4)
 
 
 end
