@@ -167,10 +167,18 @@ end
 
 function Test_lua:test_same_current_thread_twice ()
            
-    local T = lua.current_thread ()
-    local S = lua.current_thread ()
+    local T, t = lua.current_thread ()
+
+    lua.push (T, 3)
+
+    local S, s = lua.current_thread ()
+
+    lua.push (S, 4)
 
     lu.assertEquals (T, S)
+    lu.assertEquals (t, s)
+
+    lu.assertEquals (lua.lua_gettop (T), lua.lua_gettop (S))
 
 end
 
