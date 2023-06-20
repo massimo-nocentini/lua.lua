@@ -1,6 +1,6 @@
 
 linux:
-	gcc -O2 -std=gnu11 -fPIC -Wall -s -shared -o liblualua.so liblualua.c -llua
+	gcc -O2 -fPIC -Wall -shared -o liblualua.so liblualua.c -llua
 
 macos:
 	cc -O2 -std=c11 -fPIC -Wall -dynamiclib -o liblualua.dylib liblualua.c -llua
