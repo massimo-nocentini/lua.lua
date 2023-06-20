@@ -159,6 +159,14 @@ int l_lua_newthread(lua_State *L)
     return 2;
 }
 
+int l_lua_yield(lua_State *L)
+{
+    int n = lua_tointeger(L, 1);
+    lua_State *s = lua_isnone(L, 2) ? L : (lua_State *)lua_touserdata(L, 2);
+
+    return lua_yield(s, n);
+}
+
 int l_push(lua_State *L)
 {
     lua_State *s = (lua_State *)lua_touserdata(L, 1);
@@ -243,6 +251,7 @@ const struct luaL_Reg liblualua[] = {
     {"lua_close", l_lua_close},
     {"lua_isthread", l_lua_isthread},
     {"lua_isfunction", l_lua_isfunction},
+    {"lua_yield", l_lua_yield},
 
     {"luaL_newstate", l_luaL_newstate},
 
