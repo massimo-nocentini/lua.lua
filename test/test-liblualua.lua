@@ -164,4 +164,15 @@ function Test_lua:test_lua_newthread ()
 end
 
 
+
+function Test_lua:test_same_current_thread_twice ()
+           
+    local T = lua.current_thread ()
+    local S = lua.current_thread ()
+
+    lu.assertEquals (T, S)
+
+end
+
+
 os.exit( lu.LuaUnit.run() )
