@@ -74,11 +74,13 @@ function Test_lua:test_lua_resume ()
    
     local L = lua.current_thread ()
 
-    local T = lua.lua_newthread (L)
+    local _, t = lua.lua_newthread (L)
+    local T = lua.to_lightuserdata (t)
     local S = lua.lua_newthread (L)
 
-    local j = 42
-    lua.push (T, function (i) j = j + 1; return i + 1, j end, 0)
+    local j, init = 42, 0
+
+    lua.push (T, function (i) j = j + 1; return i + 1, j end, init)
 
     local retcode, nres = lua.lua_resume (T, S, 1)
 
@@ -87,7 +89,7 @@ function Test_lua:test_lua_resume ()
     lu.assertEquals (j, 43)
     lu.assertEquals (lua.lua_gettop(S), 0)
     lu.assertEquals (lua.lua_gettop(T), 2)
-    lu.assertEquals (lua.lua_tointeger (T, 1), 1)
+    lu.assertEquals (lua.lua_tointeger (T, 1), init + 1)
     lu.assertEquals (lua.lua_tointeger (T, 2), j)
 
 end
@@ -101,8 +103,9 @@ function Test_lua:test_lua_resume_yield ()
     local T = lua.lua_newthread (L)
     local S = lua.lua_newthread (L)
 
-    lua.push (T, function (i) while true do i = coroutine.yield (i) end end)
-    lua.lua_pushinteger (T, 0)
+    local init = 0
+
+    lua.push (T, function (i) while true do i = coroutine.yield (i) end end, init)
 
     local retcode, nres = lua.lua_resume (T, S, 1)
 
@@ -112,16 +115,16 @@ function Test_lua:test_lua_resume_yield ()
     lu.assertEquals (lua.lua_gettop(T), 1)
     
     local j = lua.lua_tointeger (T, 1)
-    lu.assertEquals (j, 0)
+    lu.assertEquals (j, init)
 
-    lua.lua_pushinteger (T, j + 1);
+    lua.push (T, j + 1);
     local retcode, nres = lua.lua_resume (T, S, 1)
 
     lu.assertEquals (retcode, lua.LUA_YIELD)
     lu.assertEquals (nres, 1)
     lu.assertEquals (lua.lua_gettop(S), 0)
     lu.assertEquals (lua.lua_gettop(T), 1)
-    lu.assertEquals (lua.lua_tointeger (T, 1), 1)
+    lu.assertEquals (lua.lua_tointeger (T, 1), init + 1)
 
 
 end

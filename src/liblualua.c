@@ -73,7 +73,7 @@ int l_current_thread(lua_State *L)
 
 int l_call_with_current_state(lua_State *L)
 {
-   
+
     luaL_argcheck(L, lua_isfunction(L, 1), 1, "Expected a function.");
 
     int nres = l_current_thread(L);
@@ -187,6 +187,26 @@ int l_lua_resume(lua_State *L)
     return 2;
 }
 
+int l_to_lightuserdata(lua_State *L)
+{
+
+    void *ud;
+
+    if (lua_iscfunction(L, 1))
+        ud = lua_tocfunction(L, 1);
+    else if (lua_isthread(L, 1))
+        ud = lua_tothread(L, 1);
+    else
+        ud = NULL;
+
+    if (ud == NULL)
+        lua_pushnil(L);
+    else
+        lua_pushlightuserdata(L, ud);
+
+    return 1;
+}
+
 int l_lua_call(lua_State *L)
 {
     lua_State *s = (lua_State *)lua_touserdata(L, 1);
@@ -227,6 +247,7 @@ const struct luaL_Reg liblualua[] = {
     {"luaL_newstate", l_luaL_newstate},
 
     {"push", l_push},
+    {"to_lightuserdata", l_to_lightuserdata},
     {"current_thread", l_current_thread},
     {"call_with_current_state", l_call_with_current_state},
     {NULL, NULL} /* sentinel */
