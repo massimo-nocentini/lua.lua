@@ -1,7 +1,6 @@
 
 local lu = require 'luaunit'
 local lua = require 'liblualua'
-local lambda = require 'operator'
 
 Test_lua = {}
 
